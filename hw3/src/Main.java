@@ -1,6 +1,8 @@
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Main {
 
@@ -15,6 +17,7 @@ public class Main {
 
 //        String query = "SELECT * FROM drawings WHERE name LIKE '%" + DT + "%'";
 
+//        String queryString = "SELECT city, zip_code, lon, lat FROM zips";
         String queryString = "SELECT city, zip_code, lon, lat FROM zips WHERE zip_code LIKE '" + 6450 + "%'";
 //        String queryString = "SELECT city, zip_code, lon, lat FROM zips WHERE zip_code LIKE 6450%";
 
@@ -39,16 +42,36 @@ public class Main {
                             rsMetaData.getColumnName(i),
                             rsMetaData.getColumnTypeName(i));
                 }
+                /*
+                * Number of colums: 4
+                * Column  1: city (VARCHAR)
+                * Column  2: zip_code (VARCHAR)
+                * Column  3: lon (FLOAT)
+                * Column  4: lat (FLOAT)
+                * */
 
 /* equals method should be both city and state */
                 while (rs.next()){
-                    String cityName = rs.getString("city");
                     String zipOfCity = rs.getString("zip_code");
+                    String cityName = rs.getString("city");
+                    Set<String> resultsInSet = new HashSet<>();
+                    resultsInSet.add(rs.getString("zip_code"));
+                    //You can loop through a set just like an array
+                    for (String result: resultsInSet){
+                        System.out.println("Here are the results" + result);
+                    }
+                    System.out.println(resultsInSet); //And print the whole set like this
                     double latOfCity = rs.getDouble("lat");
                     double lonOfCity = rs.getDouble("lon");
                     Place place = new Place(cityName, zipOfCity, latOfCity, lonOfCity);
                     System.out.println(place);
 
+
+                }
+                System.out.printf("******");
+
+                while (rs.next()){
+//                    calculateDistance
                 }
                 conn.close();
             }
@@ -98,12 +121,27 @@ public class Main {
         return listToReturn;
     }
 
-    public static int calculateDistance(int pointA, int pointB){
-        int calculatedDistance = 0;
 
+    private static final int EARTH_RADIUS = 3959; // Approx Earth radius in MI
 
-        return calculatedDistance;
+    public static double calculateDistance(double startLat, double startLong,
+                                  double endLat, double endLong) {
 
+        double calculatedDistance = 0;
+        double dLat  = Math.toRadians((endLat - startLat));
+        double dLong = Math.toRadians((endLong - startLong));
+
+        startLat = Math.toRadians(startLat);
+        endLat   = Math.toRadians(endLat);
+
+        double a = haversin(dLat) + Math.cos(startLat) * Math.cos(endLat) * haversin(dLong);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return calculatedDistance = EARTH_RADIUS * c;
+    }
+
+    public static double haversin(double val) {
+        return Math.pow(Math.sin(val / 2), 2);
     }
 
 
@@ -122,27 +160,5 @@ public class Main {
      *
      */
 
-    public class Haversine {
-        private static final int EARTH_RADIUS = 3959; // Approx Earth radius in KM
-
-        public static double distance(double startLat, double startLong,
-                                      double endLat, double endLong) {
-
-            double dLat  = Math.toRadians((endLat - startLat));
-            double dLong = Math.toRadians((endLong - startLong));
-
-            startLat = Math.toRadians(startLat);
-            endLat   = Math.toRadians(endLat);
-
-            double a = haversin(dLat) + Math.cos(startLat) * Math.cos(endLat) * haversin(dLong);
-            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-            return EARTH_RADIUS * c; // <-- d
-        }
-
-        public static double haversin(double val) {
-            return Math.pow(Math.sin(val / 2), 2);
-        }
-    }
 }
 

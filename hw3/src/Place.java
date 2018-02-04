@@ -1,19 +1,20 @@
 public class Place {
     String cityName;
-    String zipOfCity;
+    String stateOfCity;
+    String totPop;
     double latitude;
     double longitude;
 //    double distanceFromOrigin;
 
 
-    public Place(String name, String zip, double latitude, double longitude) {
+    public Place(String name, String state, double latitude, double longitude, String totPop) {
         this.cityName = name;
-        this.zipOfCity = zip;
+        this.stateOfCity = state;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.totPop = totPop;
 //        this.distanceFromOrigin = distanceFromOrigin;
     }
-
 
 
 
@@ -21,10 +22,24 @@ public class Place {
     public String toString() {
         return "Place{" +
                 "name='" + cityName + '\'' +
-                ", region='" + zipOfCity + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
+                ", state='" + stateOfCity + '\'' +
+                ", households=" + latitude +
+                ", population=" + totPop +
+
 //                ", distanceFromOrigin=" + distanceFromOrigin +
                 '}';
     }
+    
+//    @Override
+//    public String toString() {
+//        return "Place{" +
+//                "name='" + cityName + '\'' +
+//                ", zip='" + zipOfCity + '\'' +
+//                ", latitude=" + latitude +
+//                ", longitude=" + longitude +
+//                ", population=" + totPop +
+//
+////                ", distanceFromOrigin=" + distanceFromOrigin +
+//                '}';
+//    }
 }
