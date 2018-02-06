@@ -4,6 +4,32 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/*
+        * The program should produce a list of places within the given distance of the specified zip code along
+        * with the total population and the total number of housing units.
+        * For example, if given a zip code of 64507 and a distance of 300,
+        * the program would give a list of all places within 300 miles of St. Joseph.
+        *
+        * Each place should be listed only once, even if it has several zip codes.
+        * For each place be sure to list the place name, state, the total population,
+        * and the total number of housing units.
+        * It should also list the distance from the source in both kilometers and miles.
+        * If there are several zip codes for a place, use any of the distances you calculated.
+        *
+        * Obviously this program is going to miss places outside the US if you give a latitude and longitude near a US border.
+        *
+        * */
+
+/*
+* To produce this ArrayList I need to calculate distance between two points?
+*
+* Yes, I need to go through each zipCode and calculate the distance it is from the input code.
+*
+* If it is less than the input radius add that city (cityName, total population, total housing units) to the List
+*
+*
+*
+* */
 public class Main {
 
     static Connection conn;
@@ -15,11 +41,15 @@ public class Main {
         String user = "csc254";
         String password = "age126";
 
-//        String query = "SELECT * FROM drawings WHERE name LIKE '%" + DT + "%'";
+//        String queryString = "select city, sum(estimatedpopulation) AS totalPopulation, sum(taxreturnsfiled) AS households from zips2 where locationtype = 'PRIMARY' GROUP BY city, state";
+            String queryString = "select city, sum(estimatedpopulation) AS totalPopulation, sum(taxreturnsfiled) AS households from zips2 where locationtype = 'PRIMARY' GROUP BY city, state";
+//        String queryString = "SELECT city, estimatedpopulation AS population, taxreturnsfiled AS numberOfHouseholds, zipcode, zips2.long, lat FROM zips2 WHERE LocationType = 'PRIMARY'";
+//        String queryString = "SELECT city, estimatedpopulation AS population, taxreturnsfiled AS numberOfHouseholds, zipcode, zips2.long, lat FROM zips2 WHERE zipcode LIKE '" + 6450 + "%' AND LocationType = 'PRIMARY'";
+        //        String queryString = "SELECT city, zip_code, lon, lat FROM zips";
+//        String queryString = "SELECT city, estimatedpopulation AS population, taxreturnsfiled AS numberOfHouseholds, zipcode, zips2.long, lat FROM zips2 WHERE zipcode LIKE '" + 6450 + "%' AND LocationType = 'PRIMARY'";
+//        String queryString = "SELECT city, estimatedpopulation AS population, taxreturnsfiled AS numberOfHouseholds, zipcode, zips2.long,  lat FROM zips2 WHERE LocationType = 'PRIMARY'";
+//        String queryString = "SELECT city, zipcode, zips2.long, lat FROM zips2 WHERE zipcode LIKE '" + 6450 + "%' AND LocationType = '"PRIMARY"'";
 
-//        String queryString = "SELECT city, zip_code, lon, lat FROM zips";
-        String queryString = "SELECT city, zip_code, lon, lat FROM zips WHERE zip_code LIKE '" + 6450 + "%'";
-//        String queryString = "SELECT city, zip_code, lon, lat FROM zips WHERE zip_code LIKE 6450%";
 
         try {
             conn = DriverManager.getConnection(host, user, password);
@@ -51,22 +81,31 @@ public class Main {
                 * */
 
 /* equals method should be both city and state */
+/*
+* ArrayList<String> hotelResultList = new ArrayList<>(columnCount);
+while (results.next()) {
+   int i = 1;
+   while(i <= columnCount) {
+        hotelResultList.add(results.getString(i++));
+   }
+}
+* */
+                ArrayList<String> resultsInSet = new ArrayList<>();
                 while (rs.next()){
-                    String zipOfCity = rs.getString("zip_code");
+                    String zipOfCity = rs.getString("zipcode");
                     String cityName = rs.getString("city");
-                    Set<String> resultsInSet = new HashSet<>();
-                    resultsInSet.add(rs.getString("zip_code"));
+                    resultsInSet.add(rs.getString("zipcode"));
                     //You can loop through a set just like an array
                     for (String result: resultsInSet){
-                        System.out.println("Here are the results" + result);
+                        System.out.println("Here are the results " + result);
                     }
-                    System.out.println(resultsInSet); //And print the whole set like this
+                    System.out.println("Here are the results i resultsInSet: "+resultsInSet); //And print the whole set like this
                     double latOfCity = rs.getDouble("lat");
-                    double lonOfCity = rs.getDouble("lon");
+                    double lonOfCity = rs.getDouble("zips2.long");
+
+
                     Place place = new Place(cityName, zipOfCity, latOfCity, lonOfCity);
-                    System.out.println(place);
-
-
+                    System.out.println("place contains: " + place);
                 }
                 System.out.printf("******");
 
@@ -83,32 +122,7 @@ public class Main {
         }
     }
 
-    /*
-    * The program should produce a list of places within the given distance of the specified zip code along
-    * with the total population and the total number of housing units.
-    * For example, if given a zip code of 64507 and a distance of 300,
-    * the program would give a list of all places within 300 miles of St. Joseph.
-    *
-    * Each place should be listed only once, even if it has several zip codes.
-    * For each place be sure to list the place name, state, the total population,
-    * and the total number of housing units.
-    * It should also list the distance from the source in both kilometers and miles.
-    * If there are several zip codes for a place, use any of the distances you calculated.
-    *
-    * Obviously this program is going to miss places outside the US if you give a latitude and longitude near a US border.
-    *
-    * */
 
-    /*
-    * To produce this ArrayList I need to calculate distance between two points?
-    *
-    * Yes, I need to go through each zipCode and calculate the distance it is from the input code.
-    *
-    * If it is less than the input radius add that city (cityName, total population, total housing units) to the List
-    *
-    *
-    *
-    * */
     public static ArrayList listOfAllCities(String zip, int radius){
         ArrayList<String > listToReturn = new ArrayList<>();
         String placeName = "";
@@ -122,7 +136,7 @@ public class Main {
     }
 
 
-    private static final int EARTH_RADIUS = 3959; // Approx Earth radius in MI
+    private static final int EARTH_RADIUS = 6371; // Approx Earth radius in MI
 
     public static double calculateDistance(double startLat, double startLong,
                                   double endLat, double endLong) {
