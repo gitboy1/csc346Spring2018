@@ -1,3 +1,5 @@
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.*;
 import java.util.*;
 
@@ -169,12 +171,20 @@ while (results.next()) {
         }
     }
 
-    private static double kilometersToMiles(double distanceInKm) {
-        return distanceInKm * 0.621371;
+    public static double kilometersToMiles(double distanceInKm) {
+        double distanceInMiles = distanceInKm * 0.621371;
+        BigDecimal bd = new BigDecimal(distanceInMiles);
+        bd = bd.round(new MathContext(2));
+        double rounded = bd.doubleValue();
+        return rounded;
     }
 
-    private static double milesToKilometeres(double distanceInMiles) {
-        return distanceInMiles * 1.60934;
+    public static double milesToKilometeres(double distanceInMiles) {
+        double distanceInKM = distanceInMiles * 1.60934;
+        BigDecimal bd = new BigDecimal(distanceInKM);
+        bd = bd.round(new MathContext(3));
+        double rounded = bd.doubleValue();
+        return rounded;
     }
 
     public static ArrayList listOfAllCities(String zip, int radius) {
